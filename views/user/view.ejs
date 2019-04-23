@@ -1,0 +1,214 @@
+<!--
+including header content which is common for all pages
+-->
+<%- include ../layouts/header.ejs %>
+<%- include ../bootstrap/index.ejs %>
+<head>
+  
+</head>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10">
+            <h2>Selected List</h2>
+        </div>
+        <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#myModal" onclick="userType('','Add')">ADD</button>
+            <button type="button" class="btn btn-outline-primary" id="ajaxCall">ADD AJAX</button>
+        </div>
+    </div>
+  <table  class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Firstname</th>
+        <th>Lastname</th>
+        <th>Email</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>  
+      <!--
+    Using FOREACH LOOP for the users array
+    
+    myArray.forEach(function(el, index) {
+      // el - current element, i - index
+    });
+  -->
+  <% if (data) { %>
+  <% $i = 1; data.forEach(function(user){ %>
+    <tr>
+      <td><%= $i %></td>
+      <td><%= user.name %></td>
+      <td><%= user.age %></td>
+      <td><%= user.email %></td>
+      <td>
+        <div style="float:left">
+            <button type="button" class="btn btn-primary btn-sm" onclick="userType('<%= user._id %>','Update')" data-toggle="modal" data-target="#myModal">Edit</button>&nbsp;
+            <button type="button" class="btn btn-primary btn-sm" onClick="userDelete('<%= user._id %>');">Delete</button>        
+        </div>
+      </td>
+    </tr>
+    
+  <%  $i++; }) %>
+  <% } %>   
+  
+    </tbody>
+  </table>
+  <!-- The Modal -->
+  <div class="modal fade" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+        
+          <!-- Modal Header -->
+          <div class="modal-header" style="background-color: #cbe8ef">
+            <h4 class="modal-title">Modal Heading</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          
+          <!-- Modal body -->
+          <div class="modal-body">
+            <!-- <form action="">
+              <input type="hidden" id="uservalue" name="uservalue" value="">
+              <input type="hidden" id="edituserid" name="edituserid" value="">
+              <div class="row">
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                      <label>Enter Your Name:</label>
+                      <input type="text" class="form-control" name="username" id="username" placeholder="Enter Your Name">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                      <label>Age:</label>
+                      <input type="text" class="form-control" name="userage" id="userage" placeholder="Enter Your Age">
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                      <label>Email:</label>
+                      <input type="text" class="form-control" name="useremail" id="userage" placeholder="Enter Your Email">
+                  </div>
+              </div>
+          </div> -->
+          
+          <!-- Modal footer -->
+          <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-success" id="formdatac" onclick=""><span class="vssUpdate"></span></button>
+          </div>
+          </form> -->
+          <form action="" name="registration" method="POST" id="registration">
+
+            <label for="password">New Password</label>
+            <input type="password" name="password" id="password" placeholder="Password" value="12345">
+        
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" value="12345">
+        
+            <button type="submit">Reset</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src='https://cdn.jsdelivr.net/jquery/1.12.4/jquery.min.js'></script> -->
+<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> -->
+<script src='https://cdn.jsdelivr.net/jquery/1.12.4/jquery.min.js'></script>
+<script src='https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js'></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript">
+$(function() {
+  $("#registration").validate({
+    rules: {
+      password: {
+        required: true,
+        minlength: 5
+      },
+      confirmPassword: {
+        required: true,
+        minlength: 5
+      },
+    },
+    messages: {
+      password: {
+        required: "Please provide a password",
+        minlength: "Your password must be at least 5 characters long"
+      },
+      confirmPassword: {
+        required: "Please provide a password",
+        minlength: "Your password must be at least 5 characters long"
+      }
+    },
+    submitHandler: function(form, e) {
+      e.preventDefault();
+        var password=$('#password').val();
+        var cpassword=$('#confirmPassword').val();
+        if(password===cpassword){
+          $.ajax({
+            url: '/users/vellies',
+            type: 'POST',
+            data:{password: password,cpassword123: cpassword},
+            dataType: 'json',
+            success: function (rs) {
+              console.log(rs);
+                    if(rs.status==true){
+                      swal({
+                        title: "success!",
+                        text: "You Data Inserted Successfully!",
+                        icon: "success",
+                        button: "OK",
+                      });
+                      $("#registration")[0].reset(); 
+                    }else{
+                      swal({
+                        title: "Error!",
+                        text: "Please Check it!",
+                        icon: "error",
+                        button: "OK",
+                      });
+                    }
+                     
+            }
+          });
+        }else{
+            swal({
+                title: "Error!",
+                text: "Give valid Confirm Password!",
+                icon: "error",
+                button: "OK",
+            }); 
+        }
+    }
+  });
+});
+</script>
+
+<script>
+    function userType(id,type){
+      $('#uservalue').val(type);
+      $('#edituserid').val(id);
+      $('.vssUpdate').html(type);
+    }
+    function userDelete(id){
+      swal({
+        title: "Good job!",
+        text: "You clicked the button!",
+        icon: "success",
+        button: "OK",
+      });
+    }
+    $('#formdatac').on('click', function() {
+      console.log('vellies');
+      var data = form.serialize();
+      console.log(data);
+      var formData = { testdata: "TEST", testdata2: "TEST2" };
+        $.ajax({
+            url: '/products',
+            data: {formData: formData},
+            contentType: 'application/json',
+            success: function(response) {
+                console.log(response.products.formData.testdata);
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
