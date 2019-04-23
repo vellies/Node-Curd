@@ -1,0 +1,36 @@
+{
+  "name": "crud-mongodb",
+  "version": "1.0.0",
+  "description": "Node.js CRUD application using MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha **/view.ejs"
+  },
+  "keywords": [
+    "crud",
+    "node",
+    "mongodb"
+  ],
+  "author": "Vellieswaran",
+  "license": "ISC",
+  "dependencies": {
+    "ajax": "0.0.4",
+    "body-parser": "^1.18.3",
+    "bootstrap": "^4.3.1",
+    "bower": "^1.8.8",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "express-flash": "0.0.2",
+    "express-mongo-db": "^2.0.3",
+    "express-session": "^1.15.3",
+    "express-validator": "^3.2.0",
+    "jquery": "^3.3.1",
+    "method-override": "^2.3.9",
+    "mongodb": "^2.2.28",
+    "popper.js": "^1.14.7"
+  },
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  }
+}
