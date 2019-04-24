@@ -45,20 +45,21 @@ app.get('/view', function(req, res, next) {
 		}
 	})
 })
-
-// SHOW ADD USER FORM
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// INSERT USER DATA
 app.post('/vellies', function(req, res, next){
-	console.log(res);
+	// console.log(res);
 	var a="req";	
 	var user = {
-		name: "name",
-		age: req.body.password,
-		email: req.body.cpassword123
+		name: req.body.username,
+		age: req.body.userage,
+		email: req.body.useremail,
+		status: '1'
 	}
 	req.db.collection('users').insert(user, function(err, result) {
 		var returnStatus={
 			status : true,
-			data   : {"a":req.body.password},
+			data   : {"a":req.body.useremail},
 			data2  : a
 		}
 		res.send(returnStatus);
@@ -67,6 +68,76 @@ app.post('/vellies', function(req, res, next){
 
 })
 
+// SHOW LIST OF USERS USING AJAX
+app.get('/readdata', function(req, res, next) {	
+	// console.log('vellies readdata');
+	req.db.collection('users').find({status:'1'}).sort({"_id": -1}).toArray(function(err, result) {
+		// console.log(result);
+			// res.render('user/list', {
+			// 	title: 'User List', 
+			// 	data: result
+			// })
+			var returnStatus={
+				status : true,
+				data   : result
+			}
+			res.send(returnStatus);
+			res.end();
+	})
+})
+// SHOW EDIT USER FORM
+app.post('/getSelectedData', function(req, res, next){
+	var o_id = ObjectId(req.body.id);
+	// console.log(o_id);
+	req.db.collection('users').find({"_id": o_id}).toArray(function(err, result) {
+		var returnStatus={
+			status : true,
+			data   : result
+		}
+		res.send(returnStatus);
+		res.end();
+	})	
+})
+// EDIT USER POST ACTION
+app.post('/updateReadData', function(req, res, next) {
+
+		var user = {
+			name: req.body.username,
+			age: req.body.userage,
+			email: req.body.useremail,
+			status:'1'
+		}
+		
+		var o_id = new ObjectId(req.body.id)
+		req.db.collection('users').update({"_id": o_id}, user, function(err, result) {
+			var returnStatus={
+				status : true,
+				data   : result
+			}
+			res.send(returnStatus);
+			res.end();
+		})		
+	
+})
+// DELETE USER POST ACTION
+app.post('/userDelete', function(req, res, next) {
+
+	var user = {
+		status: '0'
+	}
+	
+	var o_id = new ObjectId(req.body.id)
+	req.db.collection('users').update({"_id": o_id}, user, function(err, result) {
+		var returnStatus={
+			status : true,
+			data   : result
+		}
+		res.send(returnStatus);
+		res.end();
+	})		
+
+})
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 // ADD NEW USER POST ACTION
 app.get('/add', function(req, res, next){
 
@@ -111,12 +182,12 @@ app.get('/add', function(req, res, next){
 				res.redirect('/users')
 				
 				// render to views/user/add.ejs
-				/*res.render('user/add', {
+				res.render('user/add', {
 					title: 'Add New User',
 					name: '',
 					age: '',
 					email: ''					
-				})*/
+				})
 			}
 		})		
 	}
