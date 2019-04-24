@@ -1,6 +1,3 @@
-<!--
-including header content which is common for all pages
--->
 <%- include ../layouts/header.ejs %>
 <%- include ../bootstrap/index.ejs %>
 <head>
@@ -18,8 +15,8 @@ including header content which is common for all pages
     <thead>
       <tr>
         <th>ID</th>
-        <th>Name</th>
-        <th>AGE</th>
+        <th onclick="sortTable(0)">Name</th>
+        <th onclick="sortTable(1)">AGE</th>
         <th>Email</th>
         <th>Action</th>
       </tr>
@@ -133,7 +130,6 @@ $(function() {
         var useremail=$('#useremail').val();
         var uservalue=$('#uservalue').val();
         var id=$('#edituserid').val();
-        console.log(uservalue);
         if(uservalue=='Update'){
           var url='/users/updateReadData';
           var data={id:id,username: username,userage: userage,useremail: useremail};
@@ -148,7 +144,6 @@ $(function() {
             data:data,
             dataType: 'json',
             success: function (rs) {
-              console.log(rs);
                     if(rs.status==true){
                       swal({
                         title: "success!",
@@ -159,8 +154,6 @@ $(function() {
                       $("#registration")[0].reset(); 
                       $("#myModal").hide();
                       $(".close").click();
-                      // $('#myModal').modal('toggle');
-                      // $('#myModal').modal().hide();
                       readdata();
                     }else{
                       swal({
@@ -170,7 +163,6 @@ $(function() {
                         button: "OK",
                       });
                     }
-                     
             }
           });
         }else{
@@ -195,7 +187,6 @@ $(function() {
             data:{id: id},
             dataType: 'json',
             success: function (rs) {
-              console.log(rs);
                     if(rs.status==true){
                       $('#uservalue').val(type);
                       $('#edituserid').val(id);
@@ -214,55 +205,105 @@ $(function() {
       
     }
     function userDelete(id){
-      console.log(id);
       swal({
-  title: "Are you sure?",
-  text: "If you delete this post all associated comments also deleted permanently.",
-  type: "warning",
-  icon: "error",
-  showCancelButton: true,
-  closeOnConfirm: false,
-  showLoaderOnConfirm: true,
-  confirmButtonClass: "btn-danger",
-  confirmButtonText: "Yes, delete it!",
-  
-}).then(function() {
-  $.ajax({
-            url: '/users/userDelete',
-            type: 'POST',
-            data:{id: id},
-            dataType: 'json',
-            success: function (rs) {
-              console.log(rs);
-                    if(rs.status==true){
-                      readdata();
-                    }                     
-            }
-          });
-});
-      
-      // swal({
-      //   title: "Good job!",
-      //   text: "You clicked the button!",
-      //   icon: "success",
-      //   button: "OK",
-      // });
+        title: "Are you sure?",
+        text: "Once deleted, you will not be able to recover this Record!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then((willDelete) => {
+        if (willDelete) {
+                $.ajax({
+                  url: '/users/userDelete',
+                  type: 'POST',
+                  data:{id: id},
+                  dataType: 'json',
+                  success: function (rs) {
+                          if(rs.status==true){
+                                swal("Poof! Your imaginary file has been deleted!", {
+                                  icon: "success",
+                                });
+                            readdata();
+                          }                     
+                  }
+                });
+        } else {
+          swal("Your imaginary file is safe!");
+        }
+      });
     }
-    $('#formdatac').on('click', function() {
-      console.log('vellies');
-      var data = form.serialize();
-      console.log(data);
-      var formData = { testdata: "TEST", testdata2: "TEST2" };
-        $.ajax({
-            url: '/products',
-            data: {formData: formData},
-            contentType: 'application/json',
-            success: function(response) {
-                console.log(response.products.formData.testdata);
-            }
-        });
-    });
+    // $('#formdatac').on('click', function() {
+    //   console.log('vellies');
+    //   var data = form.serialize();
+    //   console.log(data);
+    //   var formData = { testdata: "TEST", testdata2: "TEST2" };
+    //     $.ajax({
+    //         url: '/products',
+    //         data: {formData: formData},
+    //         contentType: 'application/json',
+    //         success: function(response) {
+    //             console.log(response.products.formData.testdata);
+    //         }
+    //     });
+    // });
 </script>
+<script>
+  function sortTable(n) {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("readData");
+    switching = true;
+    //Set the sorting direction to ascending:
+    dir = "asc"; 
+    /*Make a loop that will continue until
+    no switching has been done:*/
+    while (switching) {
+      //start by saying: no switching is done:
+      switching = false;
+      rows = table.rows;
+      /*Loop through all table rows (except the
+      first, which contains table headers):*/
+      for (i = 1; i < (rows.length - 1); i++) {
+        //start by saying there should be no switching:
+        shouldSwitch = false;
+        /*Get the two elements you want to compare,
+        one from current row and one from the next:*/
+        x = rows[i].getElementsByTagName("TD")[n];
+        y = rows[i + 1].getElementsByTagName("TD")[n];
+        /*check if the two rows should switch place,
+        based on the direction, asc or desc:*/
+        if (dir == "asc") {
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch= true;
+            break;
+          }
+        } else if (dir == "desc") {
+          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch = true;
+            break;
+          }
+        }
+      }
+      if (shouldSwitch) {
+        /*If a switch has been marked, make the switch
+        and mark that a switch has been done:*/
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+        //Each time a switch is done, increase this count by 1:
+        switchcount ++;      
+      } else {
+        /*If no switching has been done AND the direction is "asc",
+        set the direction to "desc" and run the while loop again.*/
+        if (switchcount == 0 && dir == "asc") {
+          dir = "desc";
+          switching = true;
+        }
+      }
+    }
+  }
+  </script>
 </body>
 </html>
 
