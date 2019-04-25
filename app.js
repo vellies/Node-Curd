@@ -21,6 +21,7 @@ app.set('view engine', 'ejs')
  */ 
 var index = require('./routes/index')
 var users = require('./routes/users')
+
 /**
  * Express Validator Middleware for Form Validation
  */ 
@@ -40,6 +41,7 @@ var bodyParser = require('body-parser')
  */ 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(express.static(__dirname + '/views/mdb'));
 
 
 /**
