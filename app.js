@@ -90,12 +90,6 @@ app.use(flash())
 app.use('/', index)
 app.use('/users', users)
 
-app.get('/products', function(req, res) {
-  var vs=req.query;
-  console.log(req.query.formData.testdata);
-  res.send({ products: vs });
-});
-
 app.listen(8000, function(){
 	console.log('Server running at port 8000: http://127.0.0.1:8000')
 })
